@@ -20,6 +20,8 @@ import std.exception;
 import std.path;
 import std.file;
 
+
+
 // std.path is missing isFilePath/isDirPath
 bool isValidFilePath(string filePath)
 {
@@ -108,7 +110,7 @@ unittest
     }
 }
 
-size_t locatePattern(string source, string match, size_t start = 0)
+sizediff_t locatePattern(string source, string match, size_t start = 0)
 {
     // source can be len 0
     start && enforce(start < source.length);
@@ -134,7 +136,7 @@ string[] decomposeString(string str, string[] foo ...)
                 auto delim = foo[fi + 1];
                 assert(delim !is null);
 
-                int l = str.locatePattern(delim);
+                sizediff_t l = str.locatePattern(delim);
                 if (l == -1)
                 {
                     return null;  // fail
