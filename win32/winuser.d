@@ -2599,9 +2599,9 @@ extern (Windows) {
 	alias NAMEENUMPROCW WINSTAENUMPROCW;
 }
 
-typedef HANDLE HHOOK;
-typedef HANDLE HDWP;
-typedef HANDLE HDEVNOTIFY;
+alias HANDLE HHOOK;
+alias HANDLE HDWP;
+alias HANDLE HDEVNOTIFY;
 
 struct ACCEL {
 	BYTE fVirt;
@@ -3553,7 +3553,7 @@ struct BSMINFO {
 }
 alias BSMINFO* PBSMINFO;
 
-typedef HANDLE HRAWINPUT;
+alias HANDLE HRAWINPUT;
 
 struct RAWINPUTHEADER {
 	DWORD dwType;
@@ -4302,7 +4302,7 @@ extern (C) {
 
 
 // These shouldn't be necessary for D.
-typedef char* va_list_;
+alias char* va_list_;
 int wvsprintfA(LPSTR, LPCSTR, va_list_ arglist);
 int wvsprintfW(LPWSTR, LPCWSTR, va_list_ arglist);
 

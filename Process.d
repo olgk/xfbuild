@@ -57,6 +57,11 @@ struct ProfWatch
         sw.start();
     }
     
+    auto time()
+    {
+        return sw.peek.msecs;
+    }
+    
     StopWatch sw;
     alias sw this;
 }
@@ -169,17 +174,17 @@ void executeAndCheckFail(string[] cmd, size_t affinity)
     {
         version (Profile) { auto sw = ProfWatch(); sw.restart(); }
         auto procInfo = createProcessPipes();
-        version (Profile) writefln("--Profiler-- Pipes created in %s msecs.", sw.peek.msecs);
+        version (Profile) writefln("--Profiler-- Pipes created in %s msecs.", sw.time);
         
         string sys = cmd.join(" ");
         
         version (Profile) sw.restart();
         auto result = runProcess(sys, procInfo);
-        version (Profile) writefln("--Profiler-- Run compiler process done in %s msecs.", sw.peek.msecs);
+        version (Profile) writefln("--Profiler-- Run compiler process done in %s msecs.", sw.time);
         
         version (Profile) sw.restart();
         auto output = readProcessPipeString(procInfo);
-        version (Profile) writefln("--Profiler-- Reading pipes done in %s msecs.", sw.peek.msecs);
+        version (Profile) writefln("--Profiler-- Reading pipes done in %s msecs.", sw.time);
         
         if (result != 0)
         {
@@ -193,9 +198,11 @@ void executeAndCheckFail(string[] cmd, size_t affinity)
     }
     else
     {
+        version (Profile) { auto sw = ProfWatch(); sw.restart(); }
         string sys = cmd.join(" ");
         int result = system(sys);
-
+        version (Profile) writefln("--Profiler-- Invoke/Read process done in %s msecs.", sw.time);
+        
         if (result != 0)
         {
             string errorMsg = format("\"%s\" returned %s.",

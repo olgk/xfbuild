@@ -9,7 +9,7 @@
 *                       Placed into public domain                       *
 \***********************************************************************/
 module win32.winver;
-//pragma(lib, "version.lib");
+pragma(lib, "version.lib");
 
 private import win32.windef;
 

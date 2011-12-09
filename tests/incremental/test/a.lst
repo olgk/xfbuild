@@ -1,0 +1,12 @@
+
+Publics by name		module
+_D1a3Foo12__ModuleInfoZ          a
+_D1a3Foo15__unittest_failFiZv    a
+_D1a3Foo7__arrayZ                a
+_D1a3Foo8__assertFiZv            a
+
+
+Publics by module
+a
+	_D1a3Foo12__ModuleInfoZ           _D1a3Foo15__unittest_failFiZv
+	_D1a3Foo7__arrayZ                 _D1a3Foo8__assertFiZv

@@ -1,0 +1,26 @@
+
+Publics by name		module
+_D1a3Foo12__ModuleInfoZ          Foo
+_D1a3Foo15__unittest_failFiZv    Foo
+_D1a3Foo4sym1FZv                 Foo_1_18a
+_D1a3Foo7__arrayZ                Foo
+_D1a3Foo8__assertFiZv            Foo
+_D1b3Foo12__ModuleInfoZ          Foo
+_D1b3Foo15__unittest_failFiZv    Foo
+_D1b3Foo4sym2FZv                 Foo_2_18b
+_D1b3Foo7__arrayZ                Foo
+_D1b3Foo8__assertFiZv            Foo
+
+
+Publics by module
+Foo
+	_D1a3Foo12__ModuleInfoZ           _D1a3Foo15__unittest_failFiZv
+	_D1b3Foo7__arrayZ                 _D1b3Foo15__unittest_failFiZv
+	_D1b3Foo12__ModuleInfoZ           _D1a3Foo8__assertFiZv
+	_D1a3Foo7__arrayZ                 _D1b3Foo8__assertFiZv
+
+Foo_1_18a
+	_D1a3Foo4sym1FZv                
+
+Foo_2_18b
+	_D1b3Foo4sym2FZv                

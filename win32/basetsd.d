@@ -26,7 +26,7 @@ template CPtr(T) {
 // 'forwatd template reference' to CPtr from winnt.d caused by a circular
 // import.
 
-typedef void* HANDLE;
+alias void* HANDLE;
 
 alias HANDLE* PHANDLE, LPHANDLE;
 

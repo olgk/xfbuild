@@ -9,6 +9,7 @@ set "WINVERSIONS=-version=Unicode -version=WIN32_WINNT_ONLY -version=WindowsNTon
 set "FLAGS=-g -w -wi -debug"
 :: ~ set "FLAGS=-release -inline -O -noboundscheck"
 set "VERSION=-version=MultiThreaded"
+:: ~ set "VERSION=-version=MultiThreaded -version=Profile"
 :: ~ set "VERSION=-version=MultiThreaded -version=Profile -unittest"
 set "RUN="
 :: ~ set "RUN=&& bin\xfbuild.exe"

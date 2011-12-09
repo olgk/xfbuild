@@ -18,6 +18,7 @@ import dcollections.HashSet;
 import std.algorithm;
 import std.parallelism;
 import std.array;
+import std.datetime;
 import std.file;
 import std.stdio;
 import std.path;
@@ -545,11 +546,15 @@ void compile(ref Module[string] modules /+, ref Module[] moduleStack+/)
             Module[][] threadLater = new Module[][threads];
 
             string[int] logger;
+                
+            version (Profile)
+            {
+                auto multiWatch = StopWatch(AutoStart.yes);
+            }
             
             foreach (th; mtFor(.taskPool, 0, threads))
             {
                 auto mods = compileNow[compileNow.length * th / threads .. compileNow.length * (th + 1) / threads];
-
                 if (mods.length)
                 {
                     if (globalParams.verbose)
@@ -570,6 +575,13 @@ void compile(ref Module[string] modules /+, ref Module[] moduleStack+/)
                 }
             }
 
+            version (Profile)
+            {
+                multiWatch.stop();
+                writefln("++Profiler++ Multithread compile done in %s msecs.", multiWatch.peek.msecs);
+                multiWatch.reset();
+            }            
+            
             if (globalParams.verbose)
             {
                 foreach (i; 0 .. threads)

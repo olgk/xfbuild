@@ -14,7 +14,7 @@
       Usage instructions: http://d-programming-language.org/dmd-windows.html
                           http://d-programming-language.org/dmd-linux.html
 
-    xfBuild was tested on XP SP3 x86 and Ubuntu, x86 and x64.
+    xfBuild was tested on XP SP3 x86 and Ubuntu x86 and x64.
     OSX has not yet been tested.
       
 == Building xfBuild ==

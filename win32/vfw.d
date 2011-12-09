@@ -35,7 +35,7 @@ DWORD MKFOURCC(char ch0, char ch1, char ch2, char ch3) {
 
 const ICVERSION = 0x0104;
 
-typedef HANDLE HIC;
+alias HANDLE HIC;
 
 const BI_1632 = 0x32333631;
 
@@ -1819,7 +1819,7 @@ enum {
 	MCI_MODE_OPEN,
 }
 
-typedef HANDLE HVIDEO;
+alias HANDLE HVIDEO;
 alias HVIDEO* LPHVIDEO;
 
 // Error Return Values

@@ -66,7 +66,9 @@ template min(T) {
     }
 }
 
-const void  *NULL = null;
+enum NULL = null;
+//~ alias null NULL;
+//~ const void  *NULL = null;
 alias ubyte  BYTE;
 alias ubyte *PBYTE, LPBYTE;
 alias ushort USHORT, WORD, ATOM;
@@ -111,7 +113,9 @@ alias CPtr!(RECT) LPCRECT, LPCRECTL;
 struct POINT
 {
     LONG x;
-    LONG y;  
+    LONG y;
+    alias x e1;
+    alias y e2;
 }
 alias POINT POINTL;
 alias POINT*PPOINT, LPPOINT, PPOINTL, LPPOINTL;
@@ -119,7 +123,7 @@ alias POINT*PPOINT, LPPOINT, PPOINTL, LPPOINTL;
 struct SIZE
 {
     LONG cx;
-    LONG cy;    
+    LONG cy;
 }
 alias SIZE SIZEL;
 alias SIZE*PSIZE, LPSIZE, PSIZEL, LPSIZEL;
