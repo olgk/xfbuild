@@ -8,3 +8,4 @@ todo.txt
 .objs
 .deps
 SciTE.properties
+win32.lib
