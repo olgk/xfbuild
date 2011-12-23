@@ -127,14 +127,7 @@ struct BuildTask
             
             if (depsPath.exists && std.file.getSize(depsPath) > 0)
             {
-                auto depsFile = File(depsPath, "r");
-                scope(exit)
-                {
-                    // @BUG@ 7022 workaround
-                    depsFile.close();
-                }                
-                
-                foreach (aLine; depsFile.byLine)
+                foreach (aLine; depsPath.splitAsciiLines)
                 {
                     string line = strip(aLine).idup;
 

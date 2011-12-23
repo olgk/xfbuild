@@ -222,16 +222,13 @@ void compileAndTrackDeps(
 
     if (globalParams.useDeps)
     {
-        auto depsFile = File(depsFileName, "r");
-        
         scope (exit) 
         {
-            depsFile.close();
             std.file.remove(depsFileName);
         }
 
         //profile!("deps parsing")({
-        foreach (aLine; depsFile.byLine)
+        foreach (aLine; depsFileName.splitAsciiLines)
         {
             auto line = aLine.idup;
             auto arr = line.decomposeString(cast(string)null, ` (`, null, `) : `, null, ` : `, null, ` (`, null, `)`, null);

@@ -19,8 +19,20 @@ import std.algorithm : countUntil;
 import std.exception;
 import std.path;
 import std.file;
+import std.array;
 
-
+// Borrowed from CyberShadow's ae library, thanks Vlad.
+// <begin license section: Version: MPL 1.1/GPL 3.0>
+string[] splitAsciiLines(string filename)
+{
+    auto text = cast(string)std.file.read(filename);
+    auto lines = text.split("\n");
+	foreach (ref line; lines)
+		if (line.length && line[$-1]=='\r')
+			line = line[0..$-1];
+	return lines;
+}
+// <end license section: Version: MPL 1.1/GPL 3.0>
 
 // std.path is missing isFilePath/isDirPath
 bool isValidFilePath(string filePath)

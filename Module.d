@@ -144,9 +144,7 @@ class Module
             throw new ModuleException(format("module '%s' is empty", path), __FILE__, __LINE__);
         }
         
-        auto file = File(m.path, "r");
-        
-        foreach (aLine; file.byLine)
+        foreach (aLine; m.path.splitAsciiLines)
         {
             string line = trim(aLine).idup;
 
