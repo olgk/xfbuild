@@ -157,7 +157,7 @@ string execute(Process process)
     //~ }
 }
 
-// @TODO@ Implement pipes here
+import xfbuild.Pipes;
 void executeAndCheckFail(string[] cmd, size_t affinity)
 {
     version (Profile)
@@ -170,48 +170,23 @@ void executeAndCheckFail(string[] cmd, size_t affinity)
         }
     }
     
+    string command = cmd.join(" ");
+    version (Profile) { auto sw = ProfWatch(); sw.restart(); }
     version (Windows)
     {
-        version (Profile) { auto sw = ProfWatch(); sw.restart(); }
-        auto procInfo = createProcessPipes();
-        version (Profile) writefln("--Profiler-- Pipes created in %s msecs.", sw.time);
-        
-        string sys = cmd.join(" ");
-        
-        version (Profile) sw.restart();
-        auto result = runProcess(sys, procInfo);
-        version (Profile) writefln("--Profiler-- Run compiler process done in %s msecs.", sw.time);
-        
-        version (Profile) sw.restart();
-        auto output = readProcessPipeString(procInfo);
-        version (Profile) writefln("--Profiler-- Reading pipes done in %s msecs.", sw.time);
-        
-        if (result != 0)
-        {
-            string errorMsg = format("\"%s\" returned %s with error message:\n\n%s",
-                                     sys,
-                                     result,
-                                     output);
-            
-            throw new ProcessExecutionException(errorMsg, __FILE__, __LINE__);
-        }        
+        auto pc = exec(command);
+        enforceEx!ProcessExecutionException(pc.result == 0, format("\"%s\" returned %s with error message:\n\n%s",
+                                                              command, pc.result, pc.output), __FILE__, __LINE__);        
     }
     else
     {
-        version (Profile) { auto sw = ProfWatch(); sw.restart(); }
-        string sys = cmd.join(" ");
-        int result = system(sys);
-        version (Profile) writefln("--Profiler-- Invoke/Read process done in %s msecs.", sw.time);
-        
-        if (result != 0)
-        {
-            string errorMsg = format("\"%s\" returned %s.",
-                                     sys,
-                                     result);
+        int result = system(command);
+        enforceEx!ProcessExecutionException(result == 0, format("\"%s\" returned %s.",
+                                                           command, result), __FILE__, __LINE__);        
             
-            throw new ProcessExecutionException(errorMsg, __FILE__, __LINE__);
-        }
     }
+    
+    version (Profile) writefln("--Profiler-- Invoke/Read process done in %s msecs.", sw.time);
 }
 
 version (MultiThreaded)

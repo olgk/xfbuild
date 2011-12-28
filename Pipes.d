@@ -12,20 +12,17 @@ import xfbuild.Exception;
 version (Windows)
 {
 
+pragma(lib, "gdi32.lib");
+
 import core.memory;
 import core.runtime;
 import core.thread;
 import core.stdc.string;
-import std.concurrency;
-import std.parallelism;
 import std.conv;
-import std.exception;
-import std.file;
 import std.math;
 import std.range;
 import std.string;
 import std.utf;
-import std.process;
 
 import win32.windef;
 import win32.winuser;
@@ -59,11 +56,32 @@ auto toUTF16z(S)(S s)
 
 struct ProcessInfo
 {
+    HANDLE procHandle;
     string procName;
     HANDLE childStdinRead;
     HANDLE childStdinWrite;
     HANDLE childStdoutRead;
     HANDLE childStdoutWrite;    
+}
+
+int getReturnCode(ref ProcessInfo procInfo)
+{
+    WaitForSingleObject(procInfo.procHandle, INFINITE);
+    DWORD exitCode = 0;
+
+    if (GetExitCodeProcess(procInfo.procHandle, &exitCode))
+    {
+        // successfully retrieved exit code
+        return exitCode;
+    }
+    else
+    {
+        writeln("failed to get return code.");
+        //~ ErrorExit("CreateProcess");
+    }
+    CloseHandle(procInfo.procHandle);
+    
+    return exitCode;
 }
 
 ProcessInfo createProcessPipes()
@@ -101,10 +119,42 @@ void createProcessPipes(ref ProcessInfo procInfo)
     }
 }
 
-int runProcess(string procName, ProcessInfo procInfo)
+string readProcessPipeString(ProcessInfo procInfo)
 {
-    // Create a child process that uses the previously created pipes for STDIN and STDOUT.
-    auto szCmdline = toUTFz!(wchar*)(procName);
+    // Read output from the child process's pipe for STDOUT
+    // and write to the parent process's pipe for STDOUT.
+    // Stop when there is no more data.
+    DWORD  dwRead, dwWritten;
+    CHAR[BUFSIZE]   chBuf;
+    BOOL   bSuccess      = false;
+    HANDLE hParentStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    string buffer;
+    buffer.reserve(4096 * 16);
+    
+    // Close the write end of the pipe before reading from the
+    // read end of the pipe, to control child process execution.
+    // The pipe is assumed to have enough buffer space to hold the
+    // data the child process has already written to it.
+    if (!CloseHandle(procInfo.childStdoutWrite))
+        ErrorExit(("StdOutWr CloseHandle"));
+    
+    while (1)
+    {
+        bSuccess = ReadFile(procInfo.childStdoutRead, chBuf.ptr, BUFSIZE, &dwRead, NULL);
+
+        if (!bSuccess || dwRead == 0)
+            break;
+
+        buffer ~= chBuf[0..dwRead];
+    }
+    
+    return buffer;
+}
+
+// Create a child process that uses the previously created pipes for STDIN and STDOUT.
+void runProcess(string command, ref ProcessInfo procInfo)
+{
+    auto szCmdline = toUTFz!(wchar*)(command);
 
     PROCESS_INFORMATION piProcInfo;
     STARTUPINFO siStartInfo;
@@ -133,55 +183,45 @@ int runProcess(string procName, ProcessInfo procInfo)
     }
     else
     {
-        CloseHandle(piProcInfo.hThread);
-        WaitForSingleObject(piProcInfo.hProcess, INFINITE);
-        DWORD exitCode = 0;
-
-        if (GetExitCodeProcess(piProcInfo.hProcess, &exitCode))
-        {
-            // successfully retrieved exit code
-            return exitCode;
-        }
-
-        CloseHandle(piProcInfo.hProcess);
+        procInfo.procHandle = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION, FALSE, piProcInfo.dwProcessId);
     }
-    
-    return -1;
 }
 
-string readProcessPipeString(ProcessInfo procInfo)
+struct ProcessExec
 {
-    // Read output from the child process's pipe for STDOUT
-    // and write to the parent process's pipe for STDOUT.
-    // Stop when there is no more data.
-    DWORD  dwRead, dwWritten;
-    CHAR[BUFSIZE]   chBuf;
-    BOOL   bSuccess      = false;
-    HANDLE hParentStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    string buffer;
-    
-    // Close the write end of the pipe before reading from the
-    // read end of the pipe, to control child process execution.
-    // The pipe is assumed to have enough buffer space to hold the
-    // data the child process has already written to it.
-    if (!CloseHandle(procInfo.childStdoutWrite))
-        ErrorExit(("StdOutWr CloseHandle"));
-    
-    while (1)
-    {
-        bSuccess = ReadFile(procInfo.childStdoutRead, chBuf.ptr, BUFSIZE, &dwRead, NULL);
-
-        if (!bSuccess || dwRead == 0)
-            break;
-
-        buffer ~= chBuf[0..dwRead];
-    }
-    
-    return buffer;
+    string output;
+    int status;
+    alias status result;
 }
+
+ProcessExec exec(string command)
+{
+    auto procInfo = createProcessPipes();
+    runProcess(command, procInfo);
+
+    typeof(return) r;
+    
+    r.status = getReturnCode(procInfo);
+    r.output = readProcessPipeString(procInfo);
+    return r;
+}
+
+//~ import std.process;
+//~ ProcessExec exec(string command)
+//~ {
+    //~ auto res = system(command);
+    
+    //~ typeof(return) r;
+    
+    //~ r.status = res;
+    //~ r.output = "";
+    //~ return r;
+//~ }
 
 void ErrorExit(string lpszFunction)
 {
+    // Format a readable error message, display a message box,
+    // and exit from the application.
     LPVOID lpMsgBuf;
     LPVOID lpDisplayBuf;
     DWORD  dw = GetLastError();
@@ -209,3 +249,4 @@ void ErrorExit(string lpszFunction)
 }
 
 }  // version(Windows)
+
