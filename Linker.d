@@ -17,6 +17,7 @@ import std.ascii : isAlpha;
 import std.array;
 import std.exception;
 import std.stdio;
+import std.string : splitLines, strip;
 
 /+ {
         Regex linkerFileRegex;

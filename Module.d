@@ -11,7 +11,7 @@ import xfbuild.Exception;
 import xfbuild.GlobalParams;
 import xfbuild.Misc;
 
-import std.string : lastIndexOf, splitLines, strip;
+import std.string : lastIndexOf, splitLines, strip, format;
 import std.algorithm : min;
 import std.file;
 import std.stdio;
