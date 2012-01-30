@@ -22,6 +22,7 @@ import std.datetime;
 import std.file;
 import std.stdio;
 import std.path;
+import std.string : strip, format;
 
 version (MultiThreaded) 
 {
